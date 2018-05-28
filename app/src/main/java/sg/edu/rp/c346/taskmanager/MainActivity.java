@@ -55,21 +55,16 @@ public class MainActivity extends AppCompatActivity {
                 Intent i = new Intent(MainActivity.this,
                         ThirdActivity.class);
                 Task data = al.get(position);
+                Integer id = data.getId();
                 String title = data.getTitle();
                 String singers = data.getDescriptions();
-                Task target = new Task(title, singers);
+                Boolean done = data.getCompleted();
+                Task target = new Task(id,title, singers,done);
                 i.putExtra("task", target);
-                startActivity(i);
+                startActivityForResult(i,0);
             }
         });
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == RESULT_OK && requestCode == 9){
-            lv.refreshDrawableState();
-        }
-    }
+
 }

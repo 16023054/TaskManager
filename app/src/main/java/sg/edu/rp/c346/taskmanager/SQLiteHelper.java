@@ -16,6 +16,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String COLUMN_ID = "_id";
     private static final String COLUMN_TITLE = "name";
     private static final String COLUMN_DESCRIPTION = "description";
+    private static final String COLUMN_CHECKED = "checked";
 
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -26,7 +27,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         String createTaskTableSql = "CREATE TABLE " + TABLE_TASK + "("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + COLUMN_TITLE + " TEXT, "
-                + COLUMN_DESCRIPTION + " TEXT)";
+                + COLUMN_DESCRIPTION + " TEXT, "
+                + COLUMN_CHECKED + " BOOLEAN) ";
         db.execSQL(createTaskTableSql);
     }
     public ArrayList<String> getAllNotes() {
@@ -60,6 +62,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_TITLE, task.getTitle());
         values.put(COLUMN_DESCRIPTION, task.getDescriptions());
+        values.put(COLUMN_CHECKED,task.getCompleted());
         long result = db.insert(TABLE_TASK, null, values);
         if (result == -1){
             Log.d("DBHelper", "Insert failed");
@@ -72,7 +75,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         ArrayList<Task> notes = new ArrayList<Task>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns= {COLUMN_ID, COLUMN_TITLE, COLUMN_DESCRIPTION};
+        String[] columns= {COLUMN_ID, COLUMN_TITLE, COLUMN_DESCRIPTION,COLUMN_CHECKED};
         String condition = COLUMN_TITLE + " Like ?";
         String[] args = { "%" +  keyword + "%"};
         Cursor cursor = db.query(TABLE_TASK, columns, condition, args,
@@ -83,12 +86,25 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 int id = cursor.getInt(0);
                 String title = cursor.getString(1);
                 String description = cursor.getString(2);
-                Task note = new Task(title, description);
+                boolean value = cursor.getInt(3) > 0;
+                Task note = new Task(id,title, description,value);
                 notes.add(note);
             } while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
         return notes;
+    }
+    public int updateNote(Task task){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_TITLE, task.getTitle());
+        values.put(COLUMN_DESCRIPTION, task.getDescriptions());
+        values.put(COLUMN_CHECKED, task.getCompleted());
+        String condition = COLUMN_ID + "= ?";
+        String[] args = {String.valueOf(task.getId())};
+        int result = db.update(TABLE_TASK, values, condition, args);
+        db.close();
+        return result;
     }
 }
