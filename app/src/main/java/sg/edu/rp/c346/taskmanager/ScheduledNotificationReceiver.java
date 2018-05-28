@@ -12,20 +12,25 @@ import android.support.v4.app.NotificationCompat;
 
 public class ScheduledNotificationReceiver extends BroadcastReceiver {
     int reqCode = 12345;
+String text = "";
     @Override
     public void onReceive(Context context, Intent intent) {
         NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        String action = intent.getAction();
+        String text = intent.getStringExtra("title");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel("default","Default Channel", NotificationManager.IMPORTANCE_DEFAULT);
             channel.setDescription("This is for default notification");
             notificationManager.createNotificationChannel(channel);
+
         }
         Intent i = new Intent(context, MainActivity.class);
+
         PendingIntent pIntent = PendingIntent.getActivity(context, reqCode, i, PendingIntent.FLAG_CANCEL_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default");
         builder.setContentTitle("Task Manager Reminder");
-        builder.setContentText("");
+        builder.setContentText(text);
         builder.setSmallIcon(android.R.drawable.ic_dialog_info);
         builder.setContentIntent(pIntent);
         builder.setAutoCancel(true);

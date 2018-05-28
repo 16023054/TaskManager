@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -45,6 +46,20 @@ public class MainActivity extends AppCompatActivity {
                         AddActivity.class);
                 i.putExtra("data", "");
                 startActivityForResult(i, 9);
+            }
+        });
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int
+                    position, long identity) {
+                Intent i = new Intent(MainActivity.this,
+                        ThirdActivity.class);
+                Task data = al.get(position);
+                String title = data.getTitle();
+                String singers = data.getDescriptions();
+                Task target = new Task(title, singers);
+                i.putExtra("task", target);
+                startActivity(i);
             }
         });
     }
