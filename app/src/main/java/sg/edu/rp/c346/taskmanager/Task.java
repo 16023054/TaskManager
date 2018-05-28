@@ -7,8 +7,7 @@ public class Task implements Serializable {
     private String title;
     private String descriptions;
 
-    public Task(Integer id, String title, String descriptions) {
-        this.id = id;
+    public Task(String title, String descriptions) {
         this.title = title;
         this.descriptions = descriptions;
     }

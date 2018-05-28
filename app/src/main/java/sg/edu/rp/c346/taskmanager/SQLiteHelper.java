@@ -55,11 +55,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("ALTER TABLE " + TABLE_TASK + " ADD COLUMN module_name TEXT ");
 
     }
-    public long insertSong(String title, String description) {
+    public long insertSong(Task task) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COLUMN_TITLE, title);
-        values.put(COLUMN_DESCRIPTION, description);
+        values.put(COLUMN_TITLE, task.getTitle());
+        values.put(COLUMN_DESCRIPTION, task.getDescriptions());
         long result = db.insert(TABLE_TASK, null, values);
         if (result == -1){
             Log.d("DBHelper", "Insert failed");
@@ -67,5 +67,28 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.close();
         Log.d("SQL Insert ",""+ result); //id returned, shouldn’t be -1
         return result;
+    }
+    public ArrayList<Task> getAllSongs(String keyword) {
+        ArrayList<Task> notes = new ArrayList<Task>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] columns= {COLUMN_ID, COLUMN_TITLE, COLUMN_DESCRIPTION};
+        String condition = COLUMN_TITLE + " Like ?";
+        String[] args = { "%" +  keyword + "%"};
+        Cursor cursor = db.query(TABLE_TASK, columns, condition, args,
+                null, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                String title = cursor.getString(1);
+                String description = cursor.getString(2);
+                Task note = new Task(title, description);
+                notes.add(note);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return notes;
     }
 }

@@ -18,9 +18,11 @@
         </activity>
 
         <receiver
-            android:name=".BroadcastReceiver"
+            android:name=".ScheduledNotificationReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
+            android:exported="true" />
+
+        <activity android:name=".AddActivity"></activity>
     </application>
 
 </manifest>
